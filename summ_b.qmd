@@ -1,0 +1,1144 @@
+---
+title: "UT Austin SDS material summary"
+format: 
+  html:
+    theme: cosmo
+---
+
+## Unit 1. SDS 313: Intro to Data Science
+
+#### 1. Visualizing and Describing Data
+
+<br>
+
+##### 1a. Variable Types
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '10px'}}}%%
+flowchart LR
+  A[ ] --> B(Single Categorical Variable)
+  B --> C(defines membership in a group)
+  C --> D[describes with frequencies or proportions]
+  C --> E[displays with bar chart]
+  
+  A --> F(Single Numeric Variable)
+  F --> G(quantitative measurement)
+  G --> H["describes with<br>1. average-mean or median<br>2. Spread-standard deviation or quartiles"]
+  G --> I[displays with histogram or boxplot]
+  
+  A --> J(2 Numeric Variables)
+  J --> K["describes with correlation: -1 &le; r &le; 1"]
+  J --> L[displays with scatterplot]
+  
+  A --> M(2 Categorical Variables)
+  M --> N[describes with row or column percentages]
+  M --> O[displays with grouped bar chart]
+  
+  A --> P(One Categorical and One Numeric Variable)
+  P --> Q[describes with compare average and spread of each group]
+  P --> R[displays with grouped histogram or grouped boxplot]
+```
+
+<br>
+
+##### 1b. Data Types
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '10px'}}}%%
+flowchart LR
+  A1[ ] --> B1["Numeric Data Types"]
+  B1 --> F1["int=integers; discrete"]
+  B1 -->G1["dbl=double(real numbers); continuous"]
+  
+  A1 --> C1["Categorical Data Types"]
+  C1 -->H1["chr=character vectors(strings), Ex:\"apple\""]
+  C1 -->I1["fctr=factors, which are categorical variables with fixed possible values"]
+  H1 -->T1["Nominal:cannot be ranked or ordered<br> Ordinal:can be ranked or ordered"]
+  I1 -->T1
+  
+  A1 --> D1["Date/Time Data Types"]
+  D1 -->J1["dttm= a date and a time"]
+  D1 -->K1["date= date only"]
+  D1 -->M1["time= time only"]
+  J1 -->N1["code and value:<br>%d=day in decimal number<br>%m=month in decimal number<br>%b=month abbreviated<br>%B=month full name<br>%y=year 2 digits<br>%Y=year 4 digits"]
+  K1 -->N1
+  M1 -->N1
+  J1 -->O1["base r function:<br>as.Date()<br>lubridate package:<br>ymd(), mdy(), dmy(), ymd_hms(), make_date(), make_datetime()..."]
+  K1 -->O1
+  M1 -->O1
+  M1 -->P1["hms package:<br>hms(), as_hms()"]
+  
+  A1 --> E1["Logical Data Types"]
+  E1 --> L1["lgl= TRUE or FALSE"]
+  
+  A1 -->Y1["NA Values"]
+  Y1 -->Z1["is.na()<br>na.rm=TRUE"]
+```
+
+Example of make_date:
+
+```{r include=FALSE}
+library(dplyr)
+library(lubridate)
+library(hms)
+```
+
+```{r}
+df <- tibble(
+  year = c(2021, 2022),
+  month = c(1, 12),
+  day = c(5, 31)
+)
+
+df <- df %>%
+  mutate(date = make_date(year, month, day))
+
+df
+
+```
+
+<br> hms example:
+
+```{r}
+x <- hms::hms(hours = 2, minutes = 30, seconds = 15)
+x
+
+```
+
+<br>
+
+##### 1c. Matrices, DataFrames, Tibbles
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A2[ ] --> B2(Matrix)
+  B2 --> E2["functions:<br>matrix()<br>is.matrix()<br>as.matrix()"]
+  B2 --> F2["definition: homogeneous two-dimensional dataset"]
+  B2 --> G2["performs arithmetic operations item-by-item"]
+
+  A2 --> C2(DataFrame)
+  C2 --> H2["functions:<br>data.frame()<br>is.data.frame()<br>as.data.frame()"]
+  C2 --> I2["definition: heterogeneous two-dimensional dataset (can contain variables of different types)"]
+  C2 --> J2["contains column/variable names and row/observation names. Each row is a case."]
+
+  A2 --> D2(Tibble)
+  D2 --> K2["functions:<br>tibble()<br>is.tibble()<br>as_tibble()"]
+  D2 --> L2["definition: like a dataframe but easier to work with, especially for larger datasets"]
+  D2 --> M2["never changes the types of the inputs or names of variables"]
+  D2 --> N2["refined print method:<br>shows only first 10 rows<br>and only columns that fit on screen"]
+```
+
+Example:
+
+```{r}
+# 1. Matrix: homogeneous data (all numeric here)
+mat <- matrix(1:6, nrow = 2, ncol = 3)
+print("Matrix:")
+print(mat)
+
+# 2. Data frame: heterogeneous data types allowed
+df <- data.frame(
+  id = c(1, 2),
+  name = c("Alice", "Bob"),
+  score = c(88.5, 92.3)
+)
+print("Data Frame:")
+print(df)
+
+# 3. Tibble: modern, tidyverse-friendly data frame
+tb <- tibble(
+  id = c(1, 2),
+  name = c("Alice", "Bob"),
+  score = c(88.5, 92.3)
+)
+print("Tibble:")
+print(tb)
+
+```
+
+<br>
+
+##### 1d. Merging Data
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '20px'}}}%%
+flowchart LR
+  A5[Join Types] --> B5["inner_join(x,y)"]
+  A5 -->C5["left_join(x,y)"]
+  A5 -->D5["right_join(x,y)"]
+  A5 -->E5["full_join(x,y)"]
+  A5 -->F5["semi_join(x,y)"]
+  A5 -->G5["anti_join(x,y)"]
+```
+
+<p style="text-align: center;">
+
+<img src="inner.png" width="400"/>
+
+</p>
+
+<p style="text-align: center;">
+
+<img src="outer.png" width="400"/>
+
+</p>
+
+<p style="text-align: center;">
+
+<img src="filter.png" width="400"/>
+
+</p>
+
+#### 2. dplyr package functions
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '21px'}}}%%
+flowchart LR
+  A3[ ] -->B3[filter]
+  B3 --> G3(select observations by criteria)
+  
+  A3 --> C3[arrange]
+  C3 --> H3(reorder rows)
+  
+  A3 --> D3[select]
+  D3 --> I3(pick variables by their names)
+  
+  A3 --> E3[mutate]
+  E3 --> J3(create new variables with functions of existing variables)
+  
+  A3 --> F3[summarize]
+  F3 --> K3(collapse many values down to a single summary)
+```
+
+Example:
+
+```{r}
+df <- tibble(
+  name = c("Alice", "Bob", "Charlie", "David"),
+  age = c(25, 30, 22, 28),
+  score = c(88, 95, 77, 84)
+)
+
+df %>% filter(age > 25)
+
+df %>% arrange(score)
+
+df %>% select(name, score)
+
+df %>% mutate(passed = score >= 80)
+
+df %>% summarize(avg_score = mean(score))
+
+```
+
+<br>
+
+#### 3. tidyr package functions
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '10px'}}}%%
+flowchart LR
+  A4[ ] -->B4(gather)
+  B4 --> BB4(combines values of a single variable that are spread across multiple columns)
+  
+  A4 -->C4(spread)
+  C4 --> CC4(extracts multiple variables defined in one column with values in another)
+  
+  A4 -->D4(separate)
+  D4 --> DD4(extracts different values existing in the same column)
+  
+  A4 -->E4(unite)
+  E4 --> EE4(combines values across different columns into a single column)
+
+```
+
+Example:
+
+```{r include=FALSE}
+library(tidyr)
+library(tibble)
+```
+
+```{r}
+# Step 1: Start with a wide dataset
+wide_data <- tibble(
+  name = c("Alice", "Bob"),
+  math = c(90, 85),
+  english = c(88, 92)
+)
+
+wide_data
+
+# Step 2: gather → make long format
+long_data <- wide_data %>%
+  gather(key = "subject", value = "score", math:english)
+
+long_data
+
+# Step 3: unite → combine name and subject
+united_data <- long_data %>%
+  unite("name_subject", name, subject, sep = "_")
+
+united_data
+
+# Step 4: separate → split back into name and subject
+separated_data <- united_data %>%
+  separate(name_subject, into = c("name", "subject"), sep = "_")
+
+separated_data
+
+# Step 5: spread → convert back to wide format
+final_data <- separated_data %>%
+  spread(key = subject, value = score)
+
+final_data
+```
+
+<br>
+
+#### 4. Web Scrapping (rvest package)
+
+```{r}
+library(rvest)
+
+#Step 1: Store HTML source code as a list with read_html()
+IMDb_link <- "https://mycurlyadventures.com/fun-austin-date-night-ideas/"
+IMDb_page <- read_html(IMDb_link)
+
+
+#Step 2: Use Chrome's "Selector Gadget" to find the HTML tag
+# of the elements you want to scrape (movie titles)
+movie_titles <- html_text(html_elements(IMDb_page, ".wp-block-heading:nth-child(63) , .wp-block-heading:nth-child(65) , .mv-ad-box+ .wp-block-heading , .wp-block-heading:nth-child(28) , .wp-block-heading:nth-child(34) , .wp-block-heading:nth-child(36) , .wp-block-heading:nth-child(38) , .wp-block-heading:nth-child(40) , .size-large+ .wp-block-heading , .wp-block-heading:nth-child(21)"))
+movie_titles
+
+
+```
+
+<br>
+
+#### 5. Stringr package
+
+```{r}
+#
+#--- String Basics ---#
+#
+
+#You can use " " or ' ' to make a string
+
+string1a <- "This is a string"
+string1a
+
+string1b <- 'This is also a string'
+string1b
+
+#Use \' or \" to include those within your string
+string3 <- "It\'s been a great day!"
+string3
+
+#\n is a line break:
+string4a <- "Go over there...\n NOW!"
+string4a
+#use cat() to print actual text:
+cat(string4a)
+
+#\t is a tab:
+string4b <- "Go over there...\t NOW!"
+cat(string4b)
+
+#\ can be used to denote symbols like:
+string5 <- "My favorite letter is \u00b5"
+cat(string5)
+
+
+
+#
+#--- stringr Text Functions ---#
+#
+
+library(stringr)
+
+#String length:
+string3
+str_length(string3)
+
+#String subsetting
+myfruit <- c("Apple", "Banana", "Pear") 
+str_sub(myfruit, 1, 3)
+
+#Negative indices count backwards from end
+str_sub(myfruit, -3, -1)
+
+#Upper vs. lower case
+str_to_upper("my favorite food is pizza")
+str_to_lower("my FAVORITE food is pizza")
+str_to_title("my favorite food is pizza")
+str_to_sentence("my favorite food is pizza")
+
+
+#
+#--- Finding Text Matches ---#
+#
+
+
+x <- c("bear.", "fox", "tiger.", "koala", "arctic fox")
+
+#Finding specific character(s) within a string:
+str_detect(x, "a")
+str_count(x, "a")
+str_subset(x, "a")
+
+#Highlight matches in viewer:
+str_view(x, "a")
+str_view(x, "ar")
+
+#Use . as a wildcard:
+str_view(x, ".a.")
+str_view(x, ".e.")
+str_view(x, ".e")
+
+#Matching a period with \\.
+str_view(x, "\\.")
+
+#^ matches the start of a string, $ matches the end
+str_view(x, "^b")
+str_view(x, "a$")
+
+#Exact matches
+str_view(x, "fox")
+str_view(x, "^fox$")
+
+#Using (|) or [] for 'or' matches
+str_view(x, "ti(g|c)")
+str_view(x, "[abc]")
+
+```
+
+[StringR Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf)
+
+<br>
+
+#### 6. Loops and Functions
+
+<br>
+
+##### 6a. Function Example
+
+```{r}
+hello <- function(){ # 1. name and arguments
+print('Hello World!') # 2. body and returns
+} # 3. close function
+hello() # 4. function call
+
+
+```
+
+```{r}
+mymode <- function(x){
+  if (length(x)==1){
+    return(x)
+  }
+  else {
+  xtable <- table(x)
+  maxcount <- max(xtable)
+  xmode <- names(xtable[xtable==maxcount])
+  as.numeric(xmode)
+  }
+}
+
+x2 <- c(5,6,6,6,7)
+mymode(x2)
+#table consists of names and values
+
+```
+
+<br>
+
+##### 6b. Loop Example
+
+```{r}
+for (i in 1:10) { 	
+  if (i > 5) print(i)
+  else if (i > 2) print('Between 3 and 5')
+  else print('Less than 3')
+} 	
+
+```
+
+<br>
+
+#### 7. Simulations
+
+```{r}
+#Simulating a probability distribution
+
+#runif is generating 10000 numbers between 0 and 1
+x <- runif(10000,0,1)
+hist(x, main='Uniform (0,1) Distribution')
+
+y <- rnorm(10000,0,1)
+hist(y, main='Normal (0,1) Distribution')
+
+```
+
+```{r}
+#Calculate the probability of rolling a "4"
+
+myrolls <- numeric(0)
+my4prob <- numeric(0)
+
+for (i in 1:5000) {
+  x <- sample(1:6,1)
+  myrolls[i] <- x
+  my4prob[i] <- sum(myrolls==4)/i
+}
+
+plot(1:5000, my4prob, type='l')
+abline(h=1/6, lty=2, col='red')
+
+```
+
+#### 8. Shiny App
+
+```{r}
+
+
+library(shiny)
+
+films <- read.csv('films.csv')
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("Films Data"),
+
+    # Sidebar with a slider input for number of bins 
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("bins",
+                        "Number of bins:",
+                        min = 1,
+                        max = 50,
+                        value = 30),
+            
+        #option to show mean
+        checkboxInput("checkbox", label="Display mean", value=FALSE),
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+           plotOutput("distPlot"),
+           hr(),
+           fluidRow(column(5, verbatimTextOutput("mean"))),
+           
+        )
+    )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+
+    output$distPlot <- renderPlot({
+        
+        # draw the histogram based on input$bins from ui.R
+        hist(films$Days, breaks = input$bins, main='Distribution of Days Spent in Theaters',xlab='Days Spent in Theaters',col = 'purple', border = 'darkgrey')
+    })
+    
+    #Display mean if selected
+    output$mean <- renderPrint({ 
+        if(input$checkbox == TRUE){
+            mean(films$Days)
+        }
+         })
+}
+
+# Run the application 
+#shinyApp(ui = ui, server = server)
+
+
+```
+
+Since markdown does not support Shinny App, the screenshot to the application is below:
+
+<p style="text-align: center;">
+
+<img src="shinny.png" width="500"/>
+
+</p>
+
+------------------------------------------------------------------------
+
+## Unit 2. SDS 315: Statistical Thinking
+
+#### 1. Studies
+
+data set = data frame(s) + code book(s) <br> sample = a specific selection of cases from the population <br> The unit of analysis = the type of entity you choose to focus on
+
+bias: a systematic discrepancy between the population and a sample
+
+##### 1a. Sampling Methods
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '20px'}}}%%
+flowchart LR
+  A6[ ] --> B6["Simple Random Sampling:<br>Every member of the
+population has an equal
+chance of getting selected"]
+
+  B6 --> C6["But you do NOT have
+access to the full registry"]
+
+  A6 --> D6["Stratified Random Sampling:<br>Respondents are split into sub groups and<br>then randomly selected from each group"]
+  
+  A6 --> E6["Multi-Stage Sampling:<br>several sampling methods across different levels, applied in stages"]
+  
+  A6 --> F6["Cluster Sampling:<br>one divides the population into different
+clusters and then randomly selects some
+clusters (and all the units in those clusters)"]
+
+  A6 -->G6["Systematic Sampling:<br>select every kth unit from a list"]
+  
+  A6 -->H6["Convenience Sampling:<br>one selects units that are convenient to
+access, like people walking on the street"]
+
+  A6 -->I6["Snowball Sampling:<br>one selects individuals that are convenient
+to access, those individuals then recruit
+people they can access, and so on"]
+
+  A6 -->J6["Quota Sampling:<br>one selects individuals (non-randomly) from
+some particular sections of the population
+that are of special interest in the study"]
+
+  A6 -->K6["Judgement Sampling:<br>one selects individuals based on one’s
+judgment"]
+
+```
+
+<p style="text-align: center;">
+
+<img src="diff.png" width="400"/>
+
+</p>
+
+<br>
+
+##### 1b. Types of biases
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart LR
+  A7[ ] --> B7["Sampling bias:<br>Due to the faulty sampling scheme and analyses, e.g., failing to correct for
+the imbalance when selecting units with equal probabilities"]
+  A7 --> C7["Non-Response Bias:<br> People not responding to questions"]
+  A7 --> D7("Response Bias:<br> People giving incorrect/distorted/less truthful responses due to
+psychological, social reasons")
+  A7 -->F7["Recall Bias:Compared to people not affected by a condition, people with the
+condition may be more likely to recall or exaggerate a certain risk
+factor, even if it did not exist, because of a temptation to tell
+themselves a coherent story about their own misfortune."]
+  A7 --> E7("Biases arising from erroneous study designs:<br>1. Not properly defining the research
+problem and/or the target population,<br>2. Not properly framing the survey questions, etc.")
+```
+
+Example on sampling in R:
+
+```{r}
+library(ggplot2)
+
+x<-c(1,2,3,4,2,3,4,2)
+sample(x, 3, replace=FALSE, prob=NULL)
+#prob = NULL means can define the weights of each)
+```
+
+<br>
+
+##### 1c. Experiments, Observational Studies, Cohort Studies
+
+::::::: {scrollable="true" style="overflow-x: auto;"}
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '35px'}}}%%
+flowchart LR
+  R8["Quasi/Natural Experiment"] -->Z8["designs that are like an experiment, but without an
+actual experimental intervention"]
+```
+
+:::::: {scrollable="true" style="overflow-x: auto;"}
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '35px'}}}%%
+flowchart LR
+  BB8["Experiment"] --> FF8["Placebo Effect"]
+  BB8 --> GG8["Blocking"]
+  GG8 --> HH8["reduces random imbalances between<br> treatment and control groups"]
+```
+
+Experiment:Use a control group, block what you can, randomize what you cannot
+
+Placebo effect: any effect produced by a treatment that cannot be attributed to the properties of the treatment itself, and must therefore be due to the subject’s belief in the effect of that treatment.
+
+Blocking: In the context of an experiment, the best-case scenario is to randomize subjects to treatment and control within a bunch of near-twin pairs
+
+Blocking vs Matching: Matching is similar in spirit to blocking. But matching happens in the analysis phase, in the absence of randomization. We already know who's been treated and who hasn’t, and this treatment decision was out of our control. Blocking happens in the design phase, prior to randomization. When we create blocks, we haven’t yet decided who gets the treatment and who gets the control.
+
+::::: {scrollable="true" style="overflow-x: auto;"}
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '20px'}}}%%
+flowchart LR
+  C8["Observational Studies"] --> J8[Matching]
+  
+  J8 -->K8["Pros<br>It’s transparent. Even if there are lots of details about<br>how matching is actually done, pretty<br>much anyone can understand the idea."]
+  J8 --> YY8["Cons<br>You can only match on what you can observe.
+<br>Rejoinder: with unobserved confounders, <br>nothing works except randomization"]
+ 
+```
+
+Observational Studies: merely observe the effect of some treatment or risk factor, without having the ability to change who is or isn’t exposed to it
+
+Matching: For every treated case, find control cases that are as similar as possible. Discard cases without a good match.
+
+:::: {scrollable="true" style="overflow-x: auto;"}
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart LR
+  W8["Repeated Measures"] --> D8["Cohort Studies"]
+  D8 --> M8["Defined group followed over time"]
+  D8 --> N8["Prospective vs. Retrospective"]
+  D8 --> P8["Pros & Cons:<br>Multiple outcomes,<br>Rare exposures,<br>Long, costly,<br>Confounding"]
+```
+
+Cohort Studies: similar in concept to an experiment, but involves no randomization.
+
+Example: You start with a cohort of people who share some particular defining characteristic. You follow those people over time. During this follow-up, some of the cohort will be exposed to a specific risk factor (pollution, sugary foods, etc.), and some won’t. These form your treatment and control groups, respectively.
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart LR
+  X8["One-Time Comparison"] --> S8["Cross-Sectional Studies"]
+  S8 --> T8["Compare groups at one point in time"]
+  S8 --> V8["Descriptive vs. Analytical"]
+  S8 --> U8["Pros:<br>Quick, broad data<br>Cons:<br>No causality,<br>Recall bias,<br>Interpretation issues"]
+```
+
+Descriptive: Assess the prevalence of a condition" vs. Analytical: Evaluate the association of an outcome with other characteristics of the population (i.e., percentage of Texans with lung cancer who also smoked)
+
+------------------------------------------------------------------------
+
+A diff-in-diff design shares some things in common with RD design: - It’s used in situations where a policy affects one group, but not the other. There’s a “running variable” that determines the treatment, almost always time. - A diff-in-diff design also shares something in common with a block design: Each observational unit is a “block” that serves as its own control. Here, the control is in a “before and after” sense, as we’ll see.
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '10px'}}}%%
+flowchart TB
+  A9["Experiment (Randomized Controlled Trials)"] --> B9["Quasi-Experiments<br>with Randomization"]
+  B9 --> C9["Prospective Cohort Studies"]
+  C9 --> D9["Retrospective Cohort &<br>Case-Control Studies"]
+```
+
+#### 2. Statistical Uncertainty
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart LR
+  A10[difference] --> B10["Estimand :<br>some feature of the population of interest<br>(e.g. proportion of Democratic voters among all U.S. voters).<br>Often called a parameter."]
+  A10 --> C10["Sample estimate :<br>that same feature, but of a sample<br>rather than the whole population"]
+```
+
+Sources of error:
+
+1.  variance: random differences between estimand and estimate
+2.  bias: systematic differences between estimand and estimate.
+
+<br>
+
+##### 2a. Bootstrap
+
+In most situations, we can’t repeatedly sample from the population and track how much the answer changes from one sample to the next.
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart LR
+  A11[Bootstrap] --> C11["Bootstrap Sample: A sample from the sample with replacement"]
+  A11 -->D11["Core assumption of the bootstrap:<br>The randomness in your data"]
+
+```
+
+Bootstrap Definition: repeatedly sample (with replacement) from the sample itself, and we track how much the estimate changes from one such sample to the next.
+
+Coverage Principle: X% confidence interval for every estimate you made, those intervals should cover their corresponding values at least X% of the time. <br> sample code for bootstrapping:
+
+```{r}
+#| eval: false
+# Data Distribution
+
+ggplot(NHANES_sleep) + geom_histogram(aes(x = SleepHrsNight), binwidth=1)
+mean(~SleepHrsNight, data=NHANES_sleep)
+
+
+# Bootstrap Samples
+# one sample
+NHANES_sleep_bootstrap = mosaic::resample(NHANES_sleep)
+mean(~SleepHrsNight, data=NHANES_sleep_bootstrap)
+
+# many samples
+rep_B <- 10000
+boot_sleep <- do(rep_B)*mean(~SleepHrsNight, data=mosaic::resample(NHANES_sleep))
+head(boot_sleep)
+
+# Bootstrap Distribution
+gg_boot_sleep <- ggplot(boot_sleep) + geom_histogram(aes(x=mean),bins=30)
+gg_boot_sleep
+sd(boot_sleep$mean)
+
+# Approx 68% Confidence Interval
+lwr <- mean(boot_sleep$mean) - sd(boot_sleep$mean)
+upr <- mean(boot_sleep$mean) + sd(boot_sleep$mean)
+cbind(lwr,upr)
+gg_boot_sleep + geom_vline(xintercept=c(lwr,upr))
+sum(boot_sleep$mean > lwr & boot_sleep$mean < upr)/rep_B
+
+
+```
+
+<br>
+
+##### 2b. Hypothesis Testing
+
+Steps:
+
+::: {scrollable="true" style="overflow-x: auto;"}
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '35px'}}}%%
+flowchart TB
+  A11["Null Hypothesis (H₀)"] --> B11["Test Statistic (T)<br>Summarizes data<br>Measures evidence"]
+  B11 --> C11["Sampling Distribution<br>P(T | H₀)"]
+  C11 --> D11["Assess if H₀ is believable<br>Or indicates an anomaly"]
+  
+  E11["p-value:<br>Probability of seeing T or<br>more extreme if H₀ is true"] --> D11
+  F11["Smaller p-value<br>→less likely under H₀"] --> D11
+  G11["Interpretation:<br>Probability of observed or<br>more extreme result<br>given H₀ is true"] --> D11
+  H11["Test Statistic:<br>Numeric summary for assessing H₀"] --> B11
+```
+
+Test statistic: $$
+\chi^2 = \sum_{i=1}^{k} \frac{(O_i - E_i)^2}{E_i}
+$$
+
+<br>
+
+Error Types in Hypothesis Testing:
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '15px'}}}%%
+flowchart TB
+  A12["Error Types"] --> B12["Type I Error:<br>H₀ is true,<br>but we reject it<br>(False Positive)"]
+  A12 --> C12["Type II Error:<br>H₀ is false,<br>but we fail to reject it<br>(False Negative)"]
+```
+
+Permutation Tests: - A statistical hypothesis test motivated by the proof of contradiction - Suppose that we have a treatment and control group, and we want to test whether the treatment affects the outcome of interest. We can compare the average response variable across groups to obtain our test statistic. Then, we randomly re-assign thbe responses to the treatment and control groups to construct the approximate test statistic distribution.
+
+Test Statistic Formula:
+
+<p style="text-align: center;">
+
+<img src="t-tes.png" width="500"/>
+
+</p>
+
+P-hacking is the misuse of data analysis to find patterns in data that can be presented as statistically significant, thus dramatically increasing and understating the risk of false positives. <br>
+
+##### 2c. Goodness of Fit
+
+A goodness of fit test is a statistical hypothesis test used to determine whether a variable is likely to come from a specified distribution or not. <br>
+
+##### 2d. Large Sample Inference
+
+De Moivre Equation: $$
+\text{SE}(\bar{x}) = \frac{\sigma}{\sqrt{n}}
+$$
+
+Where: - ( \bar{x} ) = sample mean\
+- ( \sigma ) = population standard deviation\
+- ( n ) = sample size
+
+Central Limit Theorem:
+
+-   Suppose we take a sample of size N from some wider population, and we compute the sample average, denoted $\bar{x}$
+
+N.  
+
+-   Let μ be the mean of the population, and let be the standard deviation of a single observation from the population.
+
+-   If N is sufficiently large(\>=30), then the statistical fluctuations in from one sample to the other can be well approximated by a normal distribution with mean and standard deviation :
+
+$$
+\bar{X}_N \sim \mathcal{N} \left( \mu, \frac{\sigma}{\sqrt{N}} \right)
+$$
+
+N: sample size bar x: sample mean σ: use the sample standard deviation
+
+CLT FOR PROPORTIONS - Let be the proportion of an event A in a population. - Let be the proportion of the event A in a random sample of size N from this population. - CLT: If N is sufficiently large, then the statistical fluctuations in from one sample to the other can be well approximated by a normal distribution with mean and standard deviation
+
+$$
+\hat{p}_n \sim \mathcal{N} \left( p_0,\ \frac{p_0 (1 - p_0)}{n} \right)
+$$
+
+$$
+\text{SD}(\hat{p}) = \sqrt{ \frac{p_0(1 - p_0)}{n} }
+$$
+
+-   ( n ): sample size\
+-   ( \bar{x} ): sample mean\
+-   ( \sigma ): population standard deviation\
+-   ( \hat{p} ): sample proportion\
+-   ( p_0 ): population proportion (under the null hypothesis)
+
+For proportions, the standard deviation (standard error) of ( \hat{p} ) is:
+
+$$
+\sigma_{\hat{p}} = \sqrt{ \frac{p_0(1 - p_0)}{n} }
+$$
+
+As N gets larger, the sampling distribution of the mean starts to look: More normal Narrower
+
+Standard Error is The standard deviation of a sampling distribution.
+
+CLT based Intervals: $$
+\hat{\theta} \pm z^* \cdot \text{SE}(\hat{\theta})
+$$
+
+<p style="text-align: center;">
+
+<img src="dis.png" width="400"/>
+
+</p>
+
+##### 2e. Regression
+
+Linear Regression Model: $$
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
+$$
+
+1.  RMSE $$
+    \text{RMSE} = \sqrt{ \frac{1}{N - 1} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2 } = \sqrt{ \frac{1}{N - 1} \sum_{i=1}^{N} \hat{e}_i^2 }
+    $$
+
+Where: - ( \hat{y}\_i = \beta\_0 + \beta\_1 x_i ): predicted value\
+- ( \hat{e}\_i = y_i - \hat{y}\_i ): residual for observation ( i )\
+- ( N ): number of observations
+
+RMSE small: more variation in y is systematic (predictable by x).
+
+RMSE large: more variation in y is individual (not predictable by x).
+
+2.  R2
+
+R2 answers the question: what fraction of variation in y is predictable in terms of x? It’s always between 0 and 1. 0 means no relationship: all variation in y is individual. 1 means that y and x are perfectly related: all variation in y is predictable
+
+Ex: Here, about 51% of the variation is predictable, and 49% unpredictable. So ( R\^2 ) ≈ 0.51
+
+( R\^2 ) closer to 1: more variation in y is systematic (predictable by x). ( R\^2 ) closer to 0: more variation in y is individual (not predictable by x). ( R\^2 ) measures strength of association, not causation.
+
+Statistical significance just means whether the confidence interval for some estimate contains zero—nothing more, nothing less.
+
+------------------------------------------------------------------------
+
+baseline: pick a baseline and compare
+
+Two major advantages of baseline/offset form: 1. Convenience. Expressing numbers in baseline/offset form puts the focus on differences between situations, which is often what we can about. 2. Generalizability. We can write down equations involving multiple variables, and everything hangs together easily.
+
+---
+##### 2f. Regression with Interactions
+
+Definition:
+- We use the term interaction in statistical modeling to describe situations where the effect of
+some feature x on the outcome y is context-specific. 
+
+Do we expect the effect of some predictor (x) on the response (y) to be basically the
+same, regardless of context? Main effect only.
+
+is that predictor’s effect on y contingent on some other variable? Interaction.
+---
+
+ANOVA: A is a way of partitioning the variability in the outcome variable into different categorical predictor sources
+
+Total Variation = Between + Within Variation
+
+-   **Total Sum of Squares (SST):**
+
+$$
+\text{SST} = \sum_{k=1}^{K} \sum_{i=1}^{n_k} \left( Y_{k,i} - \bar{Y} \right)^2
+$$
+
+-   **Between-Group Sum of Squares (SSB):**
+
+$$
+\text{SSB} = \sum_{k=1}^{K} \sum_{i=1}^{n_k} \left( \bar{Y}_k - \bar{Y} \right)^2
+$$ **Mean Square Between (MSB):**
+
+$$
+\text{MSB} = \frac{\text{SSB}}{K - 1}
+$$
+
+-   **Within-Group Sum of Squares (SSW):**
+
+$$
+\text{SSE} = \sum_{k=1}^{K} \sum_{i=1}^{n_k} \left( Y_{k,i} - \bar{Y}_k \right)^2
+$$
+
+ANOVA uses **Mean Square Error (MSE):**
+
+$$
+\text{MSE} = \frac{\text{SSE}}{N - K}
+$$ Sample Code with given result:
+
+```{r eval= FALSE}
+games_model4 = lm(PictureTarget.RT ~ FarAway + Littered + Subject +
+ FarAway:Littered, data=rxntime)
+eta_squared(games_model4, partial=FALSE)
+## # Effect Size for ANOVA (Type I)
+##
+## Parameter | Eta2 | 90% CI
+## ------------------------------------------
+## Subject | 0.10 | [0.08, 0.12]
+## FarAway | 0.03 | [0.02, 0.04]
+## Littered | 0.09 | [0.07, 0.11]
+## FarAway:Littered | 4.69e-03 | [0.00, 0.01]
+```
+
+$$
+F = \frac{\text{MSB}}{\text{MSE}} \sim F_{K - 1,\ N - K}
+$$
+
+##### 2g. Multiple Regressions
+
+Partial relationship: how changes in x predict changes in y, holding other variables constant (i.e., conditioning on fixed values of the other variables). Overall relationship: how changes in x predict changes in y, letting the other variables change as they might.
+
+Correlated predictors lead to causal confusion.
+
+An interaction means “it depends.” You can’t summarize the x-y relationship in a single number, because the strength of that relationship depends on other factors.
+
+<br>
+
+## Unit 3. Probability/Statistical Inference
+
+Definition: - outcomes: \omega\_1, \omega\_2, \ldots, \omega\_n
+
+-   sample space: set of all possible outcomes, \Omega
+
+-   event, for example, A: subset of \Omega
+
+Example: pick a number at random from 1 to 100, the outcomes: 1, 2,..., 100 the sample space: {1,2,...100} \^ \| A set/collection of objects {a,b}={b,a} no order event A =number drawn that has 1 digit ={1,2,3,4,5,6,7,8,9} \|A\|=9 vs. A 6-sided die is rolled twice: outcome: (a,b) != (b,a) because orders now matter \|\Omega\| = 36
+
+-   The union of two events, A and B, is the event C that either A occurs or B occurs or both occur: $$ A \cup B $$
+
+-   The intersection of two events, C = $$ A \cap B $$ , is the event that both A and B occur
+
+-   The complement of an event, $$ A^c $$\
+    , is the event that A does not occur and thus consists of all those elements in the sample space that are not in A $$(A \cup C)^c = A^c \cap C^c$$
+
+-   The empty set is the set with no elements: $$
+    A \cap C = \emptyset
+    $$ In such cases, A and C are said to be disjoint.
+
+-   
+
+    -   A \subset B, meaning A is contained in B, if A happens, B has to happen
+
+-   Laws:
+
+**Commutative Laws:** $$
+A \cup B = B \cup A
+$$
+
+$$
+A \cap B = B \cap A
+$$
+
+**Associative Laws:**
+
+$$
+(A \cup B) \cup C = A \cup (B \cup C)
+$$
+
+$$
+(A \cap B) \cap C = A \cap (B \cap C)
+$$
+
+**Distributive Laws:**
+
+$$
+(A \cup B) \cap C = (A \cap C) \cup (B \cap C)
+$$
+
+$$
+(A \cap B) \cup C = (A \cup C) \cap (B \cup C)
+$$
+
+<p style="text-align: center;">
+
+<img src="samp.png" width="400"/>
+
+</p>
+
+A **probability measure** on a sample space ( \Omega ) is a function ( P ) from subsets of ( \Omega ) to the real numbers that satisfies the following axioms:
+
+1.  **Normalization**:\
+    $$
+    P(\Omega) = 1
+    $$
+
+2.  **Non-negativity**:\
+    For any event ( A \subseteq \Omega ),\
+    $$
+    P(A) \geq 0
+    $$
+
+3.  **Additivity**:\
+    If ( A_1 \cap A_2 = \emptyset ), then:\
+    $$
+    P(A_1 \cup A_2) = P(A_1) + P(A_2)
+    $$
+
+**Addition Law of Probability**:
+
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+MULTIPLICATION PRINCIPLE If one experiment has m outcomes and another experiment has n outcomes, then there are mn possible outcomes for the two experiments.
+
+\[ \binom{12}{3} = \frac{12!}{3!(12 - 3)!} = \frac{12!}{3! \cdot 9!} = \frac{12 \times  11 \times 10}{6} \]
+
+choose(11,9)=choose(11,2)=\[ \binom{11}{9}\]
+
+|           |   with replacement |   without replacement |
+|----------:|-------------------:|----------------------:|
+|   ordered |             (n\^k) | n(n-1)(n-2)...(n-k+1) |
+| unordered | (\binom{n+k-1}{k}) |        (\binom{n}{k}) |
+
+Binomial Coefficients (n choose k) \[ (a + b)\^n = \sum\_{k=0}\^{n} \binom{n}{k} a\^{n-k} b\^k \]
+
+-   n \text{ objects can be grouped into } r \text{ classes, with } n_i \text{ objects in class } i \text{ for } i = 1, 2, \ldots, r.
+
+\[ \binom{n}{n_1, n_2, \ldots, n_r} = \frac{n!}{n_1! \cdot n_2! \cdots n_r!} \] Example: 7 members in size of 3,2,2: \[ \binom{7}{3, 2, 2}=\frac{7!}{3! \times 2! \times 2!} \]
+
+Example: n items, sample size r is taken. There are k defective items. What is the probability that the sample contains exactly m defectives?
+
+\[binom{n-k}{r-m}\]\] ways to choose r-m non defective items from n-k.
+
+p=\[ \frac{\binom{k}{m} \binom{n - k}{r - m}}{\binom{n}{r}} \]
+
+-   Definition of conditional probability: \[ \text{If } P(B) \> 0, \quad P(A \mid B) = \frac{P(A \cap B
+    )}{P(B)} \]
+
+-   Multiplication Law of Probability \[ P(A \cap B) = P(A \mid B) \cdot P(B) \]
+
+-   Law of total probability \[ P(A) = P(A \mid B) \cdot P(B) + P(A \mid B\^c) \cdot P(B\^c) \]
+
+-   Bayes’ rule \[ P(B \mid A) = \frac{P(A \mid B) \cdot P(B)}{P(A)} \]
+
+lecture 5
+:::
+::::
+:::::
+::::::
+:::::::

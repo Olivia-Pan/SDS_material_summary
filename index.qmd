@@ -1,0 +1,260 @@
+---
+title: "UT Austin SDS material summary"
+format: html
+---
+
+This is a Quarto website on SDS.
+
+## 1. SDS 313: Intro to Data Science
+
+#### 1. Visualizing and Describing Data
+
+<br>
+
+##### Variable Types
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A[ ] --> B(Single Categorical Variable)
+  B --> C(defines membership in a group)
+  C --> D[describes with frequencies or proportions]
+  C --> E[displays with bar chart]
+  
+  A --> F(Single Numeric Variable)
+  F --> G(quantitative measurement)
+  G --> H["describes with<br>1. average-mean or median<br>2. Spread-standard deviation or quartiles"]
+  G --> I[displays with histogram or boxplot]
+  
+  A --> J(2 Numeric Variables)
+  J --> K["describes with correlation: -1 &le; r &le; 1"]
+  J --> L[displays with scatterplot]
+  
+  A --> M(2 Categorical Variables)
+  M --> N[describes with row or column percentages]
+  M --> O[displays with grouped bar chart]
+  
+  A --> P(One Categorical and One Numeric Variable)
+  P --> Q[describes with compare average and spread of each group]
+  P --> R[displays with grouped histogram or grouped boxplot]
+```
+
+#### 2. Data Management
+
+<br>
+
+##### Data Types
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A1[ ] --> B1(Numeric Data Types)
+  B1 --> F1(int=integers)
+  B1 -->G1("dbl=double(real numbers)")
+  
+  A1 --> C1(Categorical Data Types)
+  C1 -->H1("chr=character vectors(strings), Ex:"apple"")
+  C1 -->I1(fctr=factors, which are categorical variables with fixed possible values)
+  
+  A1 --> D1(Date/Time Data Types)
+  D1 -->J1(dttm= a date and a time)
+  D1 -->K1(date= date only)
+  D1 -->M1(time= time only)
+  J1 -->N1("code and value:<br>%d=day in decimal number<br>%m=month in decimal number<br>%b=month abbreviated<br>%B=month full name<br>%y=year 2 digits<br>%Y=year 4 digits")
+  K1 -->N1
+  M1 -->N1
+  J1 -->O1("base r function:<br>as.Date()<br>lubridate package:<br>ymd(), mdy(), dmy(), ymd_hms(), make_date(), make_datetime()...")
+  K1 -->O1
+  M1 -->O1
+  M1 -->P1("hms package:<br>hms(), as_hms()")
+  
+  A1 --> E1(Logical Data Types)
+  E1 --> L1(lgl= TRUE or FALSE)
+```
+
+
+Example of make_date:
+```{r include=FALSE}
+library(dplyr)
+library(lubridate)
+library(hms)
+```
+
+```{r}
+df <- tibble(
+  year = c(2021, 2022),
+  month = c(1, 12),
+  day = c(5, 31)
+)
+
+df <- df %>%
+  mutate(date = make_date(year, month, day))
+
+df
+
+```
+<br>
+hms example:
+```{r}
+x <- hms::hms(hours = 2, minutes = 30, seconds = 15)
+x
+
+```
+
+<br>
+
+##### Matrices, DataFrames, Tibbles
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A2[ ] --> B2(Matrix)
+  B2 --> E2["functions:<br>matrix()<br>is.matrix()<br>as.matrix()"]
+  B2 --> F2["definition: homogeneous two-dimensional dataset"]
+  B2 --> G2["performs arithmetic operations item-by-item"]
+
+  A2 --> C2(DataFrame)
+  C2 --> H2["functions:<br>data.frame()<br>is.data.frame()<br>as.data.frame()"]
+  C2 --> I2["definition: heterogeneous two-dimensional dataset (can contain variables of different types)"]
+  C2 --> J2["contains column/variable names and row/observation names"]
+
+  A2 --> D2(Tibble)
+  D2 --> K2["functions:<br>tibble()<br>is.tibble()<br>as_tibble()"]
+  D2 --> L2["definition: like a dataframe but easier to work with, especially for larger datasets"]
+  D2 --> M2["never changes the types of the inputs or names of variables"]
+  D2 --> N2["refined print method:<br>shows only first 10 rows<br>and only columns that fit on screen"]
+```
+
+
+Example: 
+
+```{r}
+# 1. Matrix: homogeneous data (all numeric here)
+mat <- matrix(1:6, nrow = 2, ncol = 3)
+print("Matrix:")
+print(mat)
+
+# 2. Data frame: heterogeneous data types allowed
+df <- data.frame(
+  id = c(1, 2),
+  name = c("Alice", "Bob"),
+  score = c(88.5, 92.3)
+)
+print("Data Frame:")
+print(df)
+
+# 3. Tibble: modern, tidyverse-friendly data frame
+tb <- tibble(
+  id = c(1, 2),
+  name = c("Alice", "Bob"),
+  score = c(88.5, 92.3)
+)
+print("Tibble:")
+print(tb)
+
+```
+<br>
+
+##### dplyr package functions
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A3[ ] -->B3[filter]
+  B3 --> G3(select observations by criteria)
+  
+  A3 --> C3[arrange]
+  C3 --> H3(reorder rows)
+  
+  A3 --> D3[select]
+  D3 --> I3(pick variables by their names)
+  
+  A3 --> E3[mutate]
+  E3 --> J3(create new variables with functions of existing variables)
+  
+  A3 --> F3[summarize]
+  F3 --> K3(collapse many values down to a single summary)
+```
+
+Example:
+
+```{r}
+df <- tibble(
+  name = c("Alice", "Bob", "Charlie", "David"),
+  age = c(25, 30, 22, 28),
+  score = c(88, 95, 77, 84)
+)
+
+df %>% filter(age > 25)
+
+df %>% arrange(score)
+
+df %>% select(name, score)
+
+df %>% mutate(passed = score >= 80)
+
+df %>% summarize(avg_score = mean(score))
+
+```
+
+<br>
+
+##### tidyr package functions
+
+```{mermaid}
+%%{init: {'themeVariables': {'fontSize': '50px'}}}%%
+flowchart LR
+  A4[ ] -->B4(gather)
+  B4 --> BB4(combines values of a single variable that are spread across multiple columns)
+  
+  A4 -->C4(spread)
+  C4 --> CC4(extracts multiple variables defined in one column with values in another)
+  
+  A4 -->D4(separate)
+  D4 --> DD4(extracts different values existing in the same column)
+  
+  A4 -->E4(unite)
+  E4 --> EE4(combines values across different columns into a single column)
+
+```
+
+Example:
+
+```{r include=FALSE}
+library(tidyr)
+library(tibble)
+```
+
+```{r}
+# Step 1: Start with a wide dataset
+wide_data <- tibble(
+  name = c("Alice", "Bob"),
+  math = c(90, 85),
+  english = c(88, 92)
+)
+
+wide_data
+
+# Step 2: gather → make long format
+long_data <- wide_data %>%
+  gather(key = "subject", value = "score", math:english)
+
+long_data
+
+# Step 3: unite → combine name and subject
+united_data <- long_data %>%
+  unite("name_subject", name, subject, sep = "_")
+
+united_data
+
+# Step 4: separate → split back into name and subject
+separated_data <- united_data %>%
+  separate(name_subject, into = c("name", "subject"), sep = "_")
+
+separated_data
+
+# Step 5: spread → convert back to wide format
+final_data <- separated_data %>%
+  spread(key = subject, value = score)
+
+final_data
+```

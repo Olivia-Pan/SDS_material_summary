@@ -1,0 +1,49 @@
+// Data Structures
+digraph {
+	rankdir=LR
+	A2 [label=" "]
+	B2 [label=Matrix]
+	E2 [label="functions:
+matrix()
+is.matrix()
+as.matrix()"]
+	F2 [label="definition:
+homogeneous 2D dataset"]
+	G2 [label="performs arithmetic
+operations item-by-item"]
+	C2 [label=DataFrame]
+	H2 [label="functions:
+data.frame()
+is.data.frame()
+as.data.frame()"]
+	I2 [label="definition:
+heterogeneous 2D dataset"]
+	J2 [label="contains column/variable names
+and row/observation names"]
+	D2 [label=Tibble]
+	K2 [label="functions:
+tibble()
+is.tibble()
+as_tibble()"]
+	L2 [label="definition:
+easier dataframe
+for larger datasets"]
+	M2 [label="preserves types
+and variable names"]
+	N2 [label="refined print:
+first 10 rows,
+columns that fit"]
+	A2 -> B2
+	B2 -> E2
+	B2 -> F2
+	B2 -> G2
+	A2 -> C2
+	C2 -> H2
+	C2 -> I2
+	C2 -> J2
+	A2 -> D2
+	D2 -> K2
+	D2 -> L2
+	D2 -> M2
+	D2 -> N2
+}
