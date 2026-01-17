@@ -8,3 +8,4 @@ graphviz
 streamlit_mermaid
 seaborn
 requests
+BeautifulSoup4
