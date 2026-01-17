@@ -5,7 +5,7 @@ numpy
 scipy
 streamlit
 graphviz
-streamlit_mermaid
+streamlit-mermaid
 seaborn
 requests
-BeautifulSoup4
+beautifulsoup4
