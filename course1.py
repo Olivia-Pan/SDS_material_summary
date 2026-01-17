@@ -390,31 +390,6 @@ def show():
     movie_titles
     ''', language='r')
 
-    url = "https://mycurlyadventures.com/fun-austin-date-night-ideas/"
-    st.write(f"Scraping from: {url}")
-    try:
-        res = requests.get(url)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        headings = soup.select(".wp-block-heading")
-        scraped_titles = [h.text.strip() for h in headings if h.text.strip()]
-        filtered_titles = [
-            "Grab a Margarita with a View",
-            "Visit the Symphony",
-            "Go Sailing",
-            "See Austin from the Sky",
-            "Go Back in Time ",
-            "Listen to Live Jazz",
-            "Related Posts: Things to Do Near Austin This Weekend",
-            "Related Posts: How to Get into Austin’s Speakeasies",
-            "Related Posts: A Review of the Driskill Hotel",
-            "Related Posts: Date Ideas & Things to Do in Austin on a Rainy Day",
-            "Related Posts: All-Inclusive Wellness Retreat in Austin"
-        ]
-        st.write("**Titles Extracted:**")
-        for i, title in enumerate(filtered_titles, 1):
-            st.markdown(f"{i}. {title}")
-    except Exception as e:
-        st.error(f"Scraping failed: {e}")
     st.write("")
     # --- Section 5: Stringr package ---
 
