@@ -6,3 +6,5 @@ scipy
 streamlit
 graphviz
 streamlit_mermaid
+seaborn
+requests
