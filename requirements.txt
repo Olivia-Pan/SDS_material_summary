@@ -5,4 +5,4 @@ numpy
 scipy
 streamlit
 graphviz
-
+streamlit_mermaid
